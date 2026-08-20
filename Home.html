@@ -1,1 +1,224 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmos - Science Fact-Checking</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            padding: 50px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 3em;
+        }
+        
+        .tagline {
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        
+        .description {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+            text-align: left;
+        }
+        
+        .feature {
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .feature h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .feature p {
+            color: #666;
+            font-size: 0.95em;
+        }
+        
+        .api-section {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .api-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .endpoint {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #764ba2;
+        }
+        
+        .endpoint code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #764ba2;
+        }
+        
+        .endpoint p {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin: 10px;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .footer {
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌌 Cosmos</h1>
+        <p class="tagline">Science Fact-Checking Platform</p>
+        
+        <p class="description">
+            Cosmos is an open-source science fact-checking project dedicated to reviewing viral claims, 
+            debunking common myths, and separating scientific evidence from misinformation using reliable 
+            sources and peer-reviewed research.
+        </p>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>✓ Verify Claims</h3>
+                <p>Review viral claims and scientific assertions with verified sources</p>
+            </div>
+            <div class="feature">
+                <h3>✓ Debunk Myths</h3>
+                <p>Explore common misconceptions and their scientific explanations</p>
+            </div>
+            <div class="feature">
+                <h3>✓ Reliable Sources</h3>
+                <p>All information backed by peer-reviewed research and scientific evidence</p>
+            </div>
+            <div class="feature">
+                <h3>✓ Community Driven</h3>
+                <p>Open-source project welcoming contributions from scientists and enthusiasts</p>
+            </div>
+        </div>
+        
+        <div class="api-section">
+            <h2>📡 API Endpoints</h2>
+            <div class="endpoint">
+                <code>GET /</code>
+                <p>API status and endpoint information</p>
+            </div>
+            <div class="endpoint">
+                <code>GET /health</code>
+                <p>Health check endpoint</p>
+            </div>
+            <div class="endpoint">
+                <code>GET /api/claims</code>
+                <p>Retrieve all verified claims</p>
+            </div>
+            <div class="endpoint">
+                <code>POST /api/claims</code>
+                <p>Submit a new claim for verification</p>
+            </div>
+            <div class="endpoint">
+                <code>GET /api/myths</code>
+                <p>Retrieve all debunked myths</p>
+            </div>
+            <div class="endpoint">
+                <code>POST /api/myths</code>
+                <p>Add a new myth debunking</p>
+            </div>
+        </div>
+        
+        <div>
+            <a href="/api/claims" class="cta-button">View Claims</a>
+            <a href="/api/myths" class="cta-button">View Myths</a>
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 Cosmos - Open Source Science Fact-Checking Project</p>
+            <p>Separating Science from Misinformation</p>
+        </div>
+    </div>
+</body>
+</html>
