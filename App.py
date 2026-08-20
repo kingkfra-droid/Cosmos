@@ -1,7 +1,8 @@
 import flask
-from flask import jsonify, request
+from flask import jsonify, request, render_template
 import sqlite3
 import os
+from datetime import datetime
 
 # Initialize Flask app
 app = flask.Flask(__name__)
@@ -31,6 +32,8 @@ def init_db():
                 claim_text TEXT NOT NULL,
                 verification_status TEXT NOT NULL,
                 sources TEXT,
+                author TEXT DEFAULT 'Anonymous',
+                engagement INTEGER DEFAULT 0,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
@@ -44,6 +47,8 @@ def init_db():
                 debunked_explanation TEXT NOT NULL,
                 scientific_evidence TEXT NOT NULL,
                 sources TEXT,
+                author TEXT DEFAULT 'Anonymous',
+                engagement INTEGER DEFAULT 0,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
@@ -54,17 +59,8 @@ def init_db():
 # Routes
 @app.route('/', methods=['GET'])
 def home():
-    """Home endpoint - returns API status"""
-    return jsonify({
-        'status': 'success',
-        'message': 'Cosmos Science Fact-Checking API',
-        'version': '1.0.0',
-        'endpoints': {
-            'claims': '/api/claims',
-            'myths': '/api/myths',
-            'health': '/health'
-        }
-    }), 200
+    """Home endpoint - returns beautiful HTML dashboard"""
+    return render_template('index.html')
 
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -131,14 +127,16 @@ def create_claim():
         
         conn = get_db_connection()
         conn.execute('''
-            INSERT INTO claims (title, description, claim_text, verification_status, sources)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO claims (title, description, claim_text, verification_status, sources, author, engagement)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         ''', (
             data['title'],
             data.get('description', ''),
             data['claim_text'],
             data['verification_status'],
-            data.get('sources', '')
+            data.get('sources', ''),
+            data.get('author', 'Anonymous'),
+            0
         ))
         conn.commit()
         conn.close()
@@ -213,14 +211,16 @@ def create_myth():
         
         conn = get_db_connection()
         conn.execute('''
-            INSERT INTO myths (myth_title, myth_description, debunked_explanation, scientific_evidence, sources)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO myths (myth_title, myth_description, debunked_explanation, scientific_evidence, sources, author, engagement)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         ''', (
             data['myth_title'],
             data.get('myth_description', ''),
             data['debunked_explanation'],
             data.get('scientific_evidence', ''),
-            data.get('sources', '')
+            data.get('sources', ''),
+            data.get('author', 'Anonymous'),
+            0
         ))
         conn.commit()
         conn.close()
