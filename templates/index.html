@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmos - Science Fact-Checking Feed</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0f0f0f;
+            --secondary: #1a1a1a;
+            --tertiary: #272727;
+            --accent: #00d4ff;
+            --accent-2: #ff006e;
+            --text-primary: #ffffff;
+            --text-secondary: #acacac;
+            --verified: #00d084;
+            --false: #ff4444;
+            --pending: #ffaa00;
+        }
+
+        body {
+            background-color: var(--primary);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Header Navigation */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: var(--primary);
+            border-bottom: 1px solid var(--tertiary);
+            padding: 12px 0;
+            backdrop-filter: blur(10px);
+            background-color: rgba(15, 15, 15, 0.95);
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+            color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: var(--tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--accent);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--accent);
+            color: var(--primary);
+        }
+
+        /* Main Layout */
+        .container {
+            display: grid;
+            grid-template-columns: 280px 1fr 300px;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            height: fit-content;
+            position: sticky;
+            top: 70px;
+        }
+
+        .sidebar-section {
+            background-color: var(--secondary);
+            border: 1px solid var(--tertiary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .sidebar-section h3 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .sidebar-item {
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .sidebar-item:hover {
+            background-color: var(--tertiary);
+            color: var(--accent);
+        }
+
+        .sidebar-item.active {
+            background-color: var(--accent);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Feed */
+        .feed {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .post-card {
+            background-color: var(--secondary);
+            border: 1px solid var(--tertiary);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .post-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 8px 24px rgba(0, 212, 255, 0.1);
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .author-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .author-info p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-verified {
+            background-color: rgba(0, 208, 132, 0.2);
+            color: var(--verified);
+        }
+
+        .status-false {
+            background-color: rgba(255, 68, 68, 0.2);
+            color: var(--false);
+        }
+
+        .status-pending {
+            background-color: rgba(255, 170, 0, 0.2);
+            color: var(--pending);
+        }
+
+        .post-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .post-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .post-claim {
+            background-color: var(--primary);
+            border-left: 3px solid var(--accent);
+            padding: 12px;
+            border-radius: 6px;
+            margin: 12px 0;
+            font-size: 13px;
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
+        .post-evidence {
+            background-color: rgba(0, 208, 132, 0.1);
+            padding: 12px;
+            border-radius: 6px;
+            margin: 12px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+            border-left: 3px solid var(--verified);
+        }
+
+        .post-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid var(--tertiary);
+        }
+
+        .post-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .stat-item:hover {
+            color: var(--accent);
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            background-color: transparent;
+            border: 1px solid var(--tertiary);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background-color: rgba(0, 212, 255, 0.1);
+        }
+
+        /* Right Sidebar - Trending */
+        .trending {
+            height: fit-content;
+            position: sticky;
+            top: 70px;
+        }
+
+        .trending-card {
+            background-color: var(--secondary);
+            border: 1px solid var(--tertiary);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .trending-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .trending-item {
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 12px;
+            border-left: 3px solid transparent;
+        }
+
+        .trending-item:hover {
+            background-color: var(--primary);
+            border-left-color: var(--accent);
+        }
+
+        .trending-category {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .trending-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .trending-count {
+            font-size: 12px;
+            color: var(--accent);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--secondary);
+            border: 1px solid var(--tertiary);
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 28px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--accent);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            background-color: var(--primary);
+            border: 1px solid var(--tertiary);
+            border-radius: 6px;
+            padding: 10px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--tertiary);
+        }
+
+        .btn-cancel {
+            background-color: var(--tertiary);
+            color: var(--text-primary);
+        }
+
+        .btn-cancel:hover {
+            background-color: var(--tertiary);
+            border-color: var(--text-secondary);
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            animation: pulse 1.4s infinite;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar,
+            .trending {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 0 12px;
+            }
+
+            .modal-content {
+                max-width: 95%;
+                padding: 20px;
+            }
+
+            .post-card {
+                padding: 16px;
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                🌌 COSMOS
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-primary" onclick="openUploadModal()">
+                    ⬆️ Share Discovery
+                </button>
+                <button class="btn btn-secondary" onclick="toggleView()">
+                    🎬 Switch View
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Left Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <h3>Categories</h3>
+                <div class="sidebar-item active" onclick="filterFeed('all')">All Discoveries</div>
+                <div class="sidebar-item" onclick="filterFeed('verified')">✓ Verified</div>
+                <div class="sidebar-item" onclick="filterFeed('debunked')">✗ Debunked</div>
+                <div class="sidebar-item" onclick="filterFeed('pending')">⏳ Pending Review</div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Topics</h3>
+                <div class="sidebar-item" onclick="filterTopic('physics')">Physics</div>
+                <div class="sidebar-item" onclick="filterTopic('biology')">Biology</div>
+                <div class="sidebar-item" onclick="filterTopic('astronomy')">Astronomy</div>
+                <div class="sidebar-item" onclick="filterTopic('health')">Health</div>
+                <div class="sidebar-item" onclick="filterTopic('technology')">Technology</div>
+            </div>
+        </div>
+
+        <!-- Feed -->
+        <div class="feed" id="feed">
+            <div class="loading">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar - Trending -->
+        <div class="trending">
+            <div class="trending-card">
+                <h3>🔥 Trending</h3>
+                <div class="trending-item">
+                    <div class="trending-category">MOST VIEWED</div>
+                    <div class="trending-title">Black Hole Mysteries</div>
+                    <div class="trending-count">2.4M views</div>
+                </div>
+                <div class="trending-item">
+                    <div class="trending-category">TOP MYTH</div>
+                    <div class="trending-title">Full Moon Brightness</div>
+                    <div class="trending-count">1.8M engagements</div>
+                </div>
+                <div class="trending-item">
+                    <div class="trending-category">LATEST FACT</div>
+                    <div class="trending-title">DNA Replication</div>
+                    <div class="trending-count">892K shares</div>
+                </div>
+                <div class="trending-item">
+                    <div class="trending-category">HOT DEBATE</div>
+                    <div class="trending-title">Climate Science</div>
+                    <div class="trending-count">1.2M discussions</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Share Your Discovery</h2>
+                <button class="close-btn" onclick="closeUploadModal()">×</button>
+            </div>
+            <form id="discoveryForm" onsubmit="submitDiscovery(event)">
+                <div class="form-group">
+                    <label>Discovery Type</label>
+                    <select id="discoveryType" required>
+                        <option value="">Select Type</option>
+                        <option value="claim">Claim to Verify</option>
+                        <option value="myth">Myth to Debunk</option>
+                    </select>
+                </div>
+
+                <div id="claimFields">
+                    <div class="form-group">
+                        <label>Claim Title</label>
+                        <input type="text" id="claimTitle" placeholder="e.g., Water has memory" />
+                    </div>
+                    <div class="form-group">
+                        <label>Claim Description</label>
+                        <textarea id="claimDesc" placeholder="Describe the claim..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Full Claim Text</label>
+                        <textarea id="claimText" placeholder="State the complete claim..." required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Verification Status</label>
+                            <select id="verificationStatus" required>
+                                <option value="pending">Pending Review</option>
+                                <option value="verified">Verified True</option>
+                                <option value="false">Verified False</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="category" required>
+                                <option value="">Select Category</option>
+                                <option value="physics">Physics</option>
+                                <option value="biology">Biology</option>
+                                <option value="astronomy">Astronomy</option>
+                                <option value="health">Health</option>
+                                <option value="technology">Technology</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Sources (URLs, separated by comma)</label>
+                        <input type="text" id="claimSources" placeholder="https://example.com, https://source.org" />
+                    </div>
+                </div>
+
+                <div id="mythFields" style="display: none;">
+                    <div class="form-group">
+                        <label>Myth Title</label>
+                        <input type="text" id="mythTitle" placeholder="e.g., Sugar makes children hyperactive" />
+                    </div>
+                    <div class="form-group">
+                        <label>Myth Description</label>
+                        <textarea id="mythDesc" placeholder="Describe the myth..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Debunked Explanation</label>
+                        <textarea id="mythExplanation" placeholder="Explain why this myth is false..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Scientific Evidence</label>
+                        <textarea id="scientificEvidence" placeholder="Provide scientific proof..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Sources (URLs, separated by comma)</label>
+                        <input type="text" id="mythSources" placeholder="https://example.com, https://source.org" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Your Name (Optional)</label>
+                    <input type="text" id="authorName" placeholder="Anonymous" />
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-cancel" onclick="closeUploadModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Post Discovery</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentFilter = 'all';
+        let currentTopic = null;
+        let allPosts = [];
+
+        // Toggle between claim and myth form fields
+        document.getElementById('discoveryType').addEventListener('change', function(e) {
+            const claimFields = document.getElementById('claimFields');
+            const mythFields = document.getElementById('mythFields');
+            
+            if (e.target.value === 'claim') {
+                claimFields.style.display = 'block';
+                mythFields.style.display = 'none';
+            } else if (e.target.value === 'myth') {
+                claimFields.style.display = 'none';
+                mythFields.style.display = 'block';
+            } else {
+                claimFields.style.display = 'block';
+                mythFields.style.display = 'none';
+            }
+        });
+
+        // Load feed on page load
+        window.addEventListener('load', loadFeed);
+
+        async function loadFeed() {
+            try {
+                const claimsRes = await fetch('/api/claims');
+                const mythsRes = await fetch('/api/myths');
+                
+                const claimsData = await claimsRes.json();
+                const mythsData = await mythsRes.json();
+
+                allPosts = [];
+
+                // Add claims
+                if (claimsData.data) {
+                    claimsData.data.forEach(claim => {
+                        allPosts.push({
+                            type: 'claim',
+                            ...claim
+                        });
+                    });
+                }
+
+                // Add myths
+                if (mythsData.data) {
+                    mythsData.data.forEach(myth => {
+                        allPosts.push({
+                            type: 'myth',
+                            ...myth
+                        });
+                    });
+                }
+
+                // Sort by date (newest first)
+                allPosts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                renderFeed();
+            } catch (error) {
+                console.error('Error loading feed:', error);
+                document.getElementById('feed').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <h3>Unable to load discoveries</h3>
+                        <p>Please try refreshing the page</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderFeed() {
+            let filteredPosts = allPosts;
+
+            // Apply status filter
+            if (currentFilter === 'verified') {
+                filteredPosts = filteredPosts.filter(p => p.verification_status === 'verified');
+            } else if (currentFilter === 'debunked') {
+                filteredPosts = filteredPosts.filter(p => p.verification_status === 'false');
+            } else if (currentFilter === 'pending') {
+                filteredPosts = filteredPosts.filter(p => p.verification_status === 'pending');
+            }
+
+            const feed = document.getElementById('feed');
+            
+            if (filteredPosts.length === 0) {
+                feed.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔭</div>
+                        <h3>No discoveries yet</h3>
+                        <p>Be the first to share a discovery!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            feed.innerHTML = filteredPosts.map(post => createPostCard(post)).join('');
+        }
+
+        function createPostCard(post) {
+            const isClaimType = post.type === 'claim';
+            const title = isClaimType ? post.title : post.myth_title;
+            const description = isClaimType ? post.description : post.myth_description;
+            const claimText = isClaimType ? post.claim_text : post.debunked_explanation;
+            const statusText = isClaimType ? post.verification_status : 'debunked';
+            let statusClass = 'status-pending';
+            let statusDisplay = '⏳ Pending';
+
+            if (statusText === 'verified') {
+                statusClass = 'status-verified';
+                statusDisplay = '✓ Verified';
+            } else if (statusText === 'false' || statusText === 'debunked') {
+                statusClass = 'status-false';
+                statusDisplay = '✗ Debunked';
+            }
+
+            const date = new Date(post.created_at).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric'
+            });
+
+            const author = post.author || 'Anonymous';
+            const initials = author.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'A';
+
+            return `
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="post-author">
+                            <div class="avatar">${initials}</div>
+                            <div class="author-info">
+                                <h4>${author}</h4>
+                                <p>${date}</p>
+                            </div>
+                        </div>
+                        <div class="status-badge ${statusClass}">${statusDisplay}</div>
+                    </div>
+
+                    <h2 class="post-title">${escapeHtml(title)}</h2>
+                    ${description ? `<p class="post-description">${escapeHtml(description)}</p>` : ''}
+
+                    <div class="post-claim">${escapeHtml(claimText)}</div>
+
+                    ${isClaimType && post.verification_status === 'verified' ? 
+                        `<div class="post-evidence">✓ Scientific evidence supports this claim</div>` 
+                        : isClaimType && post.verification_status === 'false' ?
+                        `<div class="post-evidence">✗ This claim has been debunked by scientific evidence</div>`
+                        : ''}
+
+                    ${!isClaimType && post.scientific_evidence ? 
+                        `<div class="post-evidence">🔬 ${escapeHtml(post.scientific_evidence)}</div>` 
+                        : ''}
+
+                    <div class="post-footer">
+                        <div class="post-stats">
+                            <div class="stat-item">👍 ${Math.floor(Math.random() * 10000)} Agrees</div>
+                            <div class="stat-item">💬 ${Math.floor(Math.random() * 5000)} Comments</div>
+                            <div class="stat-item">↗️ ${Math.floor(Math.random() * 3000)} Shares</div>
+                        </div>
+                        <div class="post-actions">
+                            <button class="action-btn" onclick="engagePost(${post.id})">👍 Agree</button>
+                            <button class="action-btn" onclick="engagePost(${post.id})">💬 Comment</button>
+                            <button class="action-btn" onclick="engagePost(${post.id})">↗️ Share</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function filterFeed(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.sidebar-item').forEach((item, i) => {
+                if (i < 4) item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            renderFeed();
+        }
+
+        function filterTopic(topic) {
+            currentTopic = topic;
+            renderFeed();
+        }
+
+        function openUploadModal() {
+            document.getElementById('uploadModal').classList.add('active');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.remove('active');
+            document.getElementById('discoveryForm').reset();
+        }
+
+        async function submitDiscovery(e) {
+            e.preventDefault();
+            const type = document.getElementById('discoveryType').value;
+
+            try {
+                let payload;
+
+                if (type === 'claim') {
+                    payload = {
+                        title: document.getElementById('claimTitle').value,
+                        description: document.getElementById('claimDesc').value,
+                        claim_text: document.getElementById('claimText').value,
+                        verification_status: document.getElementById('verificationStatus').value,
+                        sources: document.getElementById('claimSources').value,
+                        author: document.getElementById('authorName').value || 'Anonymous'
+                    };
+                    await fetch('/api/claims', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                } else if (type === 'myth') {
+                    payload = {
+                        myth_title: document.getElementById('mythTitle').value,
+                        myth_description: document.getElementById('mythDesc').value,
+                        debunked_explanation: document.getElementById('mythExplanation').value,
+                        scientific_evidence: document.getElementById('scientificEvidence').value,
+                        sources: document.getElementById('mythSources').value,
+                        author: document.getElementById('authorName').value || 'Anonymous'
+                    };
+                    await fetch('/api/myths', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                }
+
+                closeUploadModal();
+                loadFeed();
+            } catch (error) {
+                alert('Error submitting discovery: ' + error);
+            }
+        }
+
+        function engagePost(postId) {
+            alert('Thanks for engaging! This feature will track your interaction.');
+        }
+
+        function toggleView() {
+            alert('View toggle feature coming soon!');
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('uploadModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeUploadModal();
+            }
+        });
+    </script>
+</body>
+</html>
